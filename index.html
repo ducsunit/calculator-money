@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💵 Ứng dụng Chia Tiền</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Ứng dụng Chia Tiền</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Section - Input -->
+        <div class="left-section">
+            <!-- People Section -->
+            <div class="section">
+                <h2>Danh sách người</h2>
+                
+                <label for="personInput">Tên người:</label>
+                <input 
+                    type="text" 
+                    id="personInput" 
+                    placeholder="Nhập tên người..."
+                    onkeypress="if(event.key === 'Enter') addPerson()"
+                >
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="addPerson()">Thêm người</button>
+                    <button class="btn btn-danger" onclick="deletePerson()">Xóa người</button>
+                </div>
+                
+                <div class="listbox" id="peopleList"></div>
+            </div>
+
+            <!-- Separator -->
+            <div class="separator"></div>
+
+            <!-- Payments Section -->
+            <div class="section">
+                <h2>Khoản chi</h2>
+                
+                <label for="payerInput">Ai trả:</label>
+                <input 
+                    type="text" 
+                    id="payerInput" 
+                    placeholder="Nhập tên người..."
+                    onkeypress="if(event.key === 'Enter') addPayment()"
+                >
+                
+                <label for="amountInput">Số tiền (VND):</label>
+                <input 
+                    type="number" 
+                    id="amountInput" 
+                    placeholder="Nhập số tiền..."
+                    min="1"
+                    onkeypress="if(event.key === 'Enter') addPayment()"
+                >
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="addPayment()">Thêm khoản chi</button>
+                    <button class="btn btn-danger" onclick="deletePayment()">Xóa khoản chi</button>
+                </div>
+                
+                <div class="listbox" id="paymentsList"></div>
+            </div>
+        </div>
+
+        <!-- Right Section - Results -->
+        <div class="right-section">
+            <div class="section">
+                <h2>Kết quả</h2>
+                
+                <button class="btn btn-calculate" onclick="calculate()">Tính toán</button>
+                
+                <div class="listbox" id="resultList">
+                    <p style="color: #999; text-align: center; padding: 20px;">
+                        Nhập dữ liệu và click "Tính toán" để xem kết quả
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 DucSunIT. All Rights Reserved. | Contact: <a href="tel:0867106284">0867.106.284</a></p>
+    </div>
+</body>
+</html>
