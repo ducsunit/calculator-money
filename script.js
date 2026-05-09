@@ -35,6 +35,7 @@ function addPerson() {
     input.value = '';
     input.focus();
     updatePeopleList();
+    updatePeopleOptions();
 }
 
 // Delete selected person
@@ -60,6 +61,7 @@ function deletePerson() {
     
     updatePeopleList();
     updatePaymentsList();
+    updatePeopleOptions();
 }
 
 // Update people list display
@@ -78,10 +80,22 @@ function updatePeopleList() {
     ).join('');
 }
 
+// Update suggestions for payment payer input
+function updatePeopleOptions() {
+    const options = document.getElementById('peopleOptions');
+    options.innerHTML = people
+        .map(person => `<option value="${person}"></option>`)
+        .join('');
+}
+
 // Select person
 function selectPerson(index) {
     selectedPerson = selectedPerson === index ? null : index;
     updatePeopleList();
+
+    if (selectedPerson !== null) {
+        document.getElementById('payerInput').value = people[selectedPerson];
+    }
 }
 
 // Add a new payment
@@ -90,7 +104,8 @@ function addPayment() {
     const amountInput = document.getElementById('amountInput');
     
     const person = payerInput.value.trim();
-    const amount = parseFloat(amountInput.value);
+    const amountText = amountInput.value.trim();
+    const amount = amountText === '' ? 0 : parseFloat(amountText);
 
     if (!person) {
         Swal.fire({
@@ -114,7 +129,7 @@ function addPayment() {
         return;
     }
 
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(amount) || amount < 0) {
         Swal.fire({
             icon: 'error',
             title: 'Lỗi',
@@ -163,7 +178,7 @@ function updatePaymentsList() {
 
     listbox.innerHTML = payments.map((payment, index) => 
         `<div class="listbox-item ${selectedPayment === index ? 'selected' : ''}" onclick="selectPayment(${index})">
-            ${payment.person}: ${formatNumber(Math.round(payment.amount))} VND
+            ${payment.person}: ${formatNumber(Math.round(payment.amount))}
         </div>`
     ).join('');
 }
@@ -176,7 +191,11 @@ function selectPayment(index) {
 
 // Format number with thousand separators
 function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        maximumFractionDigits: 0
+    }).format(num);
 }
 
 // Calculate and display results
@@ -232,7 +251,7 @@ function calculate() {
         const pay = Math.min(debt, credit);
         result.push({
             type: 'transaction',
-            text: `${debtor} → ${creditor}: ${formatNumber(Math.round(pay))} VND`
+            text: `${debtor} → ${creditor}: ${formatNumber(Math.round(pay))}`
         });
 
         debtors[i][1] -= pay;
@@ -253,8 +272,8 @@ function displayResults(total, share, transactions) {
     let html = '';
     
     // Summary
-    html += `<div class="result-item header">Tổng cộng: ${formatNumber(Math.round(total))} VND</div>`;
-    html += `<div class="result-item header">Mỗi người: ${formatNumber(Math.round(share))} VND</div>`;
+    html += `<div class="result-item header">Tổng cộng: ${formatNumber(Math.round(total))}</div>`;
+    html += `<div class="result-item header">Mỗi người: ${formatNumber(Math.round(share))}</div>`;
     html += `<div class="result-item" style="background: transparent; border: none; padding: 6px 0;"></div>`;
     html += `<div class="result-item header">Chi tiết thanh toán:</div>`;
     
@@ -273,4 +292,5 @@ function displayResults(total, share, transactions) {
 document.addEventListener('DOMContentLoaded', function() {
     updatePeopleList();
     updatePaymentsList();
+    updatePeopleOptions();
 });
