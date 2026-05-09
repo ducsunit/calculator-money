@@ -36,6 +36,7 @@ function addPerson() {
     input.focus();
     updatePeopleList();
     updatePeopleOptions();
+    calculate(true);
 }
 
 // Delete selected person
@@ -62,6 +63,7 @@ function deletePerson() {
     updatePeopleList();
     updatePaymentsList();
     updatePeopleOptions();
+    calculate(true);
 }
 
 // Update people list display
@@ -82,10 +84,43 @@ function updatePeopleList() {
 
 // Update suggestions for payment payer input
 function updatePeopleOptions() {
-    const options = document.getElementById('peopleOptions');
-    options.innerHTML = people
-        .map(person => `<option value="${person}"></option>`)
+    showPayerSuggestions();
+}
+
+// Show filtered payer suggestions
+function showPayerSuggestions() {
+    const input = document.getElementById('payerInput');
+    const suggestions = document.getElementById('peopleSuggestions');
+    const query = input.value.trim().toLowerCase();
+
+    if (people.length === 0) {
+        suggestions.innerHTML = '<div class="suggestion-empty">Chưa có người nào</div>';
+        suggestions.classList.add('visible');
+        return;
+    }
+
+    const filteredPeople = query
+        ? people.filter(person => person.toLowerCase().includes(query))
+        : people;
+
+    if (filteredPeople.length === 0) {
+        suggestions.innerHTML = '<div class="suggestion-empty">Không tìm thấy người phù hợp</div>';
+        suggestions.classList.add('visible');
+        return;
+    }
+
+    suggestions.innerHTML = filteredPeople
+        .map(person => `<div class="suggestion-item" onclick="selectPayerSuggestion('${person.replace(/'/g, "\\'")}')">${person}</div>`)
         .join('');
+    suggestions.classList.add('visible');
+}
+
+// Select payer from suggestions
+function selectPayerSuggestion(name) {
+    const input = document.getElementById('payerInput');
+    input.value = name;
+    document.getElementById('peopleSuggestions').classList.remove('visible');
+    input.focus();
 }
 
 // Select person
@@ -95,6 +130,7 @@ function selectPerson(index) {
 
     if (selectedPerson !== null) {
         document.getElementById('payerInput').value = people[selectedPerson];
+        showPayerSuggestions();
     }
 }
 
@@ -146,6 +182,8 @@ function addPayment() {
     payerInput.focus();
     
     updatePaymentsList();
+    showPayerSuggestions();
+    calculate(true);
 }
 
 // Delete selected payment
@@ -165,6 +203,7 @@ function deletePayment() {
     selectedPayment = null;
     
     updatePaymentsList();
+    calculate(true);
 }
 
 // Update payments list display
@@ -195,19 +234,24 @@ function formatNumber(num) {
         style: 'currency',
         currency: 'VND',
         maximumFractionDigits: 0
-    }).format(num);
+    }).format(Math.round(num * 1000));
 }
 
 // Calculate and display results
-function calculate() {
+function calculate(isAuto = false) {
     if (people.length === 0 || payments.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Cảnh báo',
-            text: 'Vui lòng thêm người và khoản chi!',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#1f77b4'
-        });
+        if (!isAuto) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo',
+                text: 'Vui lòng thêm người và khoản chi!',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#1f77b4'
+            });
+        } else {
+            const resultList = document.getElementById('resultList');
+            resultList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Nhập dữ liệu để xem kết quả</p>';
+        }
         return;
     }
 
@@ -293,4 +337,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePeopleList();
     updatePaymentsList();
     updatePeopleOptions();
+});
+
+document.addEventListener('click', function(event) {
+    const payerInput = document.getElementById('payerInput');
+    const suggestions = document.getElementById('peopleSuggestions');
+
+    if (!payerInput.contains(event.target) && !suggestions.contains(event.target)) {
+        suggestions.classList.remove('visible');
+    }
 });

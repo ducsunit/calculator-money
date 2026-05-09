@@ -49,10 +49,11 @@
                     type="text" 
                     id="payerInput" 
                     placeholder="Nhập tên người..."
-                    list="peopleOptions"
+                    oninput="showPayerSuggestions()"
+                    onfocus="showPayerSuggestions()"
                     onkeypress="if(event.key === 'Enter') addPayment()"
                 >
-                <datalist id="peopleOptions"></datalist>
+                <div class="suggestion-box" id="peopleSuggestions"></div>
                 
                 <label for="amountInput">Số tiền (VND):</label>
                 <input 
@@ -77,11 +78,9 @@
             <div class="section">
                 <h2>Kết quả</h2>
                 
-                <button class="btn btn-calculate" onclick="calculate()">Tính toán</button>
-                
                 <div class="listbox" id="resultList">
                     <p style="color: #999; text-align: center; padding: 20px;">
-                        Nhập dữ liệu và click "Tính toán" để xem kết quả
+                        Nhập dữ liệu để xem kết quả
                     </p>
                 </div>
             </div>
